@@ -1,0 +1,14 @@
+
+CREATE SCHEMA `yushin_gwt_test_project_for_rozdoum_db` ;
+
+CREATE TABLE `yushin_gwt_test_project_for_rozdoum_db`.`clients` (
+  `id` INT NOT NULL,
+  `Name` VARCHAR(50) NOT NULL,
+  `Surname` VARCHAR(50) NOT NULL,
+  `email` VARCHAR(50) NULL,
+  `dataOfBirth` VARCHAR(20) NULL,
+  `sex` VARCHAR(20) NULL,
+  PRIMARY KEY (`id`));
+
+INSERT INTO `yushin_gwt_test_project_for_rozdoum_db`.`clients` (`id`, `Name`, `Surname`, `email`, `dataOfBirth`, `sex`) 
+	VALUES ('1', 'Roman', 'Yushin', 'yushin@gmail.com', '02/01/1990', 'MALE');
