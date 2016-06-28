@@ -5,5 +5,6 @@
     <inherits name='com.google.gwt.user.User'/>
 
     <entry-point class='ua.yushin.gwt.client.StartRun'/>
+    <servlet path="/RemoteService" class="ua.yushin.gwt.server.RemServiceImpl"/>
 
 </module>

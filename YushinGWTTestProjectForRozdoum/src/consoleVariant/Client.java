@@ -152,23 +152,9 @@ public class Client {
     }
         /*
         Пример валидации даты
-        String arr[] = new String [3];
+
         Pattern pattern = Pattern.compile("(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/((18|20)\\d\\d)");
         Matcher matcher = pattern.matcher(newDataOfBirth);
-        if (matcher.matches()) {
-            System.out.println("Data is valid");
-            arr = newDataOfBirth.split("/");
-            System.out.println(arr[0] + " " + arr[1] + " " + arr[2]);
-            int days = Integer.parseInt(arr[0]);
-            int month = Integer.parseInt(arr[1]);
-            int years = Integer.parseInt(arr[2]);
-
-            dataOfBirth = new GregorianCalendar(years, month, days);
-        } else {
-            System.out.println(newDataOfBirth + "isn't valid format date. (02/05/2015)");
-            //System.out.println(dataOfBirth.toString());
-        }
-        */
 
     /**
      * override equals(Object o) by specified way

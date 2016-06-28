@@ -1,10 +1,15 @@
+/*
+    This is the test project for Rozdoum
+ */
 package ua.yushin.gwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -16,158 +21,178 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 
 import java.util.ArrayList;
-import com.google.gwt.user.client.Timer;
-
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ *
+ * @author      Yushin Roman
+ * @version     28.06.2016
  */
-
 public class StartRun implements EntryPoint {
 
+    /**
+     * store all clients in arrayList
+     */
     private ArrayList<Client> clients = new ArrayList<Client>();
 
+    /**
+     * A panel that lays all of its widgets out in a single vertical column.
+     */
     private VerticalPanel mainPanel;
-    private FlexTable stocksFlexTable;
+
+    /**
+     * A flexible table that creates cells on demand.
+     */
+    private FlexTable clientsFlexTable;
+
+    /**
+     * A panel that lays all of its widgets out in a single horizontal column.
+     */
     private HorizontalPanel addPanel;
+
+    /**
+     * A standard single-line text box.
+     * TextBox for name of new client
+     */
     private TextBox newSymbolTextBox;
+
+    /**
+     *  A standard push-button widget.
+     *  By this Button shows all clients
+     */
+    private Button showAllClientButton;
+
+    /**
+     *  A standard push-button widget.
+     *  By this button adds new client in flexTable
+     */
     private Button addButton;
-    //private Label lastUpdatedLabel;
-    private ArrayList <String> stocks = new ArrayList<String>();
-    private static final int REFRESH_INTERVAL = 5000;
-    //private Image image;
-    private Label lblStockWatcher;
+
+    /**
+     * A widget that contains arbitrary text
+     * Contains name of table
+     */
+    private Label labelMCD;
+
+    /**
+     * A widget that contains arbitrary text.
+     * Contains name of project
+     */
     private Label lblProjectName;
 
+    /**
+     * service for asynchronous service
+     */
+    private RemServiceAsync remServiceAsync = GWT.create(RemService.class);
+
+    /**
+     * main method, it loads all widgets on the page
+     */
     public void onModuleLoad() {
         RootPanel rootPanel = RootPanel.get();
-        {
-            mainPanel = new VerticalPanel();
-            rootPanel.add(mainPanel, 500, 100);
-            mainPanel.setSize("500px", "300px");
+        mainPanel = new VerticalPanel();
+        rootPanel.add(mainPanel, 500, 100);
+        mainPanel.setSize("500px", "300px");
 
-            {
-                lblStockWatcher = new Label("Manage customer database");
+        lblProjectName = new Label("Yushin GWT Test Projet for Rozdoum");
+        labelMCD = new Label("Manage customer database");
+        labelMCD.setStyleName("gwt-Label-StartRun");
 
-                lblStockWatcher.setStyleName("gwt-Label-StartRun");
+        mainPanel.add(lblProjectName);
+        mainPanel.add(labelMCD);
 
-                lblProjectName = new Label("Yushin GWT Test Projet for Rozdoum");
-                //lblStockWatcher.setStyleName("gwt-Label-ProjectName");
+        //Add these lines
+        clientsFlexTable = new FlexTable();
+        clientsFlexTable.setText(0, 0, "Name");
+        clientsFlexTable.setText(0, 1, "Remove");
 
-                mainPanel.add(lblProjectName);
-                mainPanel.add(lblStockWatcher);
-            }
-            {
-                stocksFlexTable = new FlexTable();
-                //Add these lines
-                stocksFlexTable.setText(0, 0, "Name");
-                stocksFlexTable.setText(0, 1, "Remove");
+        //clientsFlexTable.setText(0, 0, "Name");
+        //clientsFlexTable.setText(0, 1, "Surname");
+        //clientsFlexTable.setText(0, 2, "email");
+        //clientsFlexTable.setText(0, 3, "age");
+        //clientsFlexTable.setText(0, 4, "sex");
+        //clientsFlexTable.setText(0, 5, "Remove");
 
-                //stocksFlexTable.setText(0, 0, "Symbol");
-                //stocksFlexTable.setText(0, 1, "Price");
-                //stocksFlexTable.setText(0, 2, "Change");
-                //stocksFlexTable.setText(0, 3, "Remove");
+        // Add styles to elements in the stock list table.
+        clientsFlexTable.setCellPadding(6);
+        clientsFlexTable.getRowFormatter().addStyleName(0, "watchListHeader");
+        clientsFlexTable.addStyleName("watchList");
 
-                // Add styles to elements in the stock list table.
-                stocksFlexTable.setCellPadding(6);
-                //stocksFlexTable.getRowFormatter().addStyleName(0, "watchListHeader");
-                stocksFlexTable.addStyleName("watchList");
+        clientsFlexTable.getCellFormatter().addStyleName(0, 1, "watchListNumericColumn");
+        clientsFlexTable.getCellFormatter().addStyleName(0, 2, "watchListRemoveColumn");
 
-                stocksFlexTable.getCellFormatter().addStyleName(0, 1, "watchListNumericColumn");
-                stocksFlexTable.getCellFormatter().addStyleName(0, 2, "watchListRemoveColumn");
+        mainPanel.add(clientsFlexTable);
 
-                //stocksFlexTable.getCellFormatter().addStyleName(0, 1, "watchListNumericColumn");
-                //stocksFlexTable.getCellFormatter().addStyleName(0, 2, "watchListNumericColumn");
-                //stocksFlexTable.getCellFormatter().addStyleName(0, 3, "watchListRemoveColumn");
+        addPanel = new HorizontalPanel();
+        addPanel.addStyleName("addPanel");
+        mainPanel.add(addPanel);
 
-                mainPanel.add(stocksFlexTable);
-            }
-            {
-                addPanel = new HorizontalPanel();
-                addPanel.addStyleName("addPanel");
-                mainPanel.add(addPanel);
-                {
-                    newSymbolTextBox = new TextBox();
-                    newSymbolTextBox.addKeyPressHandler(new KeyPressHandler() {
-                        public void onKeyPress(KeyPressEvent event) {
-                            if (event.getCharCode() == KeyCodes.KEY_ENTER){
-                                //addStock();
-                            }
-                        }
-                    });
-                    newSymbolTextBox.setFocus(true);
-                    addPanel.add(newSymbolTextBox);
-                }
-                {
-                    addButton = new Button("New button");
-                    addButton.setStyleName("gwt-Button-Add");
-                    addButton.addClickHandler(new ClickHandler() {
-                        public void onClick(ClickEvent event) {
-
-                            //addStock();
-                            addNewClient();
-                        }
-                    });
-                    addButton.setText("Add new client");
-                    addPanel.add(addButton);
+        newSymbolTextBox = new TextBox();
+        newSymbolTextBox.addKeyPressHandler(new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getCharCode() == KeyCodes.KEY_ENTER){
+                    //add new Client
+                    addNewClient();
                 }
             }
-            {
-                //lastUpdatedLabel = new Label("New label");
-                //mainPanel.add(lastUpdatedLabel);
+        });
+        newSymbolTextBox.setFocus(true);
+        addPanel.add(newSymbolTextBox);
+
+        // addButton
+        addButton = new Button("New button");
+        addButton.setStyleName("gwt-Button-Add");
+        addButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                //add new Client
+                addNewClient();
             }
-        }
+        });
+        addButton.setText("Add new client");
+        addPanel.add(addButton);
 
-        // setup timer to refresh list automatically
-        Timer refreshTimer = new Timer() {
-            public void run()
-            {
-                refreshWatchList();
+        //showAllClientsButton
+        showAllClientButton = new Button("showAllClientButton");
+        showAllClientButton.setStyleName("gwt-Button-Add");
+        showAllClientButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                //RemService.App.getInstance().getAllClients(new AsyncCallback<ArrayList>() {
+                remServiceAsync.getAllClients(new AsyncCallback<ArrayList<Client>>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        Window.alert("Some error");
+                    }
+
+                    @Override
+                    public void onSuccess(ArrayList<Client> clients) {
+                        Window.alert("Show all clients");
+                        for (int i = 0; i < clients.size(); i++) {
+                            Window.alert("" + clients.get(i).getName());
+                        }
+                    }
+                });
             }
-        };
-        refreshTimer.scheduleRepeating(REFRESH_INTERVAL);
+        });
 
+        showAllClientButton.setText("Show all clients from database");
+        addPanel.add(showAllClientButton);
+    } // end onModuleLoad method
 
-    }
-    private void refreshWatchList() {
-
-        Client [] clientsArr = new Client[clients.size()];
-        for (int i = 0; i < clients.size(); i++) {
-            clientsArr[i] = new Client (clients.get(i).getName());
-            updateClientsTable(clientsArr);
-        }
-
-
-    }
-
-    public void updateClientsTable (Client [] clientsArr) {
-        if (clientsArr == null) {
-            return;
-        }
-        for (int i = 0; i < clientsArr.length; i++) {
-            updateTable(clientsArr[i]);
-        }
-    }
-
-    public void updateTable (Client client) {
-        if (!clients.contains(client.getName())) {
-            return;
-        }
-
-        int row = clients.indexOf(client.getName()) + 1;
-    }
-
-
+    /**
+     * add new client in flex table and return cursor in textBox
+     */
     public void addNewClient () {
 
-        // присваиваем переменной newClientName текст из newSymbolTextBox
+        // assign variable newClientName text fromnewSymbolTextBox
         final String newClientName = newSymbolTextBox.getText().trim();
         final Client newClient = new Client (newClientName);
 
-        // устанавливаем курсор обратно на newSymbolTextBox
+        // set cursor on newSymbolTextBox
         newSymbolTextBox.setFocus(true);
 
-        // валидация имени если не проходит, отчистить поле newSymbolTextBox
+        // validation of the name, clean  newSymbolTextBox if fail
         if (!newClientName.matches("^[A-Za-z]{1,20}$")) {
             Window.alert("'" + newClientName  + "' is not a valid symbol.");
             newSymbolTextBox.selectAll();
@@ -175,36 +200,30 @@ public class StartRun implements EntryPoint {
         }
         newSymbolTextBox.setText("");
 
-        // don't add the stock if it's already in the watch list
+        // don't add the stock if it's already in the list
         if (clients.contains(newClient))
             return;
 
         // ********************************************************
-        // add the stock to the list
-        int row = stocksFlexTable.getRowCount();
+        // add client in collection
         clients.add(newClient);
-        stocksFlexTable.setText(row, 0, newClientName);
-        //stocksFlexTable.setWidget(row, 2, new Label());
-        stocksFlexTable.getCellFormatter().addStyleName(row, 1, "watchListNumericColumn");
+        int row = clientsFlexTable.getRowCount();
 
-        //stocksFlexTable.getCellFormatter().addStyleName(row, 2, "watchListNumericColumn");
-        stocksFlexTable.getCellFormatter().addStyleName(row, 2, "watchListRemoveColumn");
+        clientsFlexTable.getCellFormatter().addStyleName(row, 1, "watchListNumericColumn");
+        clientsFlexTable.getCellFormatter().addStyleName(row, 2, "watchListRemoveColumn");
 
-        // add button to remove this stock from the list
+        // add button to remove this client from the list
         Button removeClient = new Button("x");
         removeClient.addStyleDependentName("remove");
         removeClient.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-
                 int removedIndex = clients.indexOf(newClient);
-                Window.alert(String.valueOf(removedIndex));
-
                 clients.remove(removedIndex);
-                stocksFlexTable.removeRow(removedIndex + 1);
+                clientsFlexTable.removeRow(removedIndex + 1);
             }
         });
-        stocksFlexTable.setWidget(row, 1, removeClient);
 
-
-    }
-}
+        clientsFlexTable.setText(row, 0, newClientName);
+        clientsFlexTable.setWidget(row, 1, removeClient);
+    } // end addNewClient
+} // end of class

@@ -3,22 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+    <servlet>
+        <servlet-name>ua.yushin.gwt.StartRun RemoteService</servlet-name>
+        <servlet-class>ua.yushin.gwt.server.RemServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ua.yushin.gwt.StartRun RemoteService</servlet-name>
+        <url-pattern>/ua.yushin.gwt.StartRun/RemoteService</url-pattern>
+    </servlet-mapping>
 
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>StartRun.html</welcome-file>
     </welcome-file-list>
 
-    <!-- Servlets
+     <!-- Servlets -->
     <servlet>
         <servlet-name>userServlet</servlet-name>
-        <servlet-class>ua.yushin.gwt.server.MyUserServiceImpl</servlet-class>
+        <servlet-class>ua.yushin.gwt.server.RemServiceImpl</servlet-class>
 
     </servlet>
 
     <servlet-mapping>
         <servlet-name>userServlet</servlet-name>
-        <url-pattern>//userService</url-pattern>
-    </servlet-mapping>-->
+        <url-pattern>/userService</url-pattern>
+    </servlet-mapping>
 
 </web-app>
