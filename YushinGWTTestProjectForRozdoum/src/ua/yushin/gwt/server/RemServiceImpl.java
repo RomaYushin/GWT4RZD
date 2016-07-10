@@ -6,15 +6,16 @@ package ua.yushin.gwt.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import ua.yushin.gwt.client.Client;
 import ua.yushin.gwt.client.RemService;
+import ua.yushin.gwt.server.db.MySQLDAOClient;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * realisation of interfaces RemoteServiceServlet and  RemService
  * get all clients from storage
  *
  * @author      Yushin Roman
- * @version     28.06.2016
+ * @version     04.07.2016
  */
 public class RemServiceImpl extends RemoteServiceServlet implements RemService {
 
@@ -26,7 +27,39 @@ public class RemServiceImpl extends RemoteServiceServlet implements RemService {
     /**
      * in clients stores all clients
      */
-    private ArrayList <Client> clients = new ArrayList<>();
+    private static ArrayList <Client> clients = new ArrayList<>();
+
+    /**
+     * new instance of MySQLDAOClient class for work with database
+     */
+    private static MySQLDAOClient mySQLDAOClient = new MySQLDAOClient();
+
+    static {
+        clients = mySQLDAOClient.getAllClientsFromDB();
+    }
+
+
+    /**
+     * add new client to database
+     *
+     * @param newClient new client for adding
+     */
+    @Override
+    public void addNewClient(Client newClient) {
+        mySQLDAOClient.addNewClientInDB(newClient);
+        clients.add(newClient);
+    }
+
+    /**
+     * remove specified client from database
+     *
+     * @param removedClient client for removing
+     */
+    @Override
+    public void removeClient(Client removedClient) {
+        mySQLDAOClient.removeClientFromDB(removedClient);
+        clients.remove(removedClient);
+    }
 
     /**
      * in this method, for example, create two client with name Bob and Joe
@@ -37,16 +70,70 @@ public class RemServiceImpl extends RemoteServiceServlet implements RemService {
      */
     @Override
     public ArrayList<Client> getAllClients() {
-
-        // here we can connect to db
-        // create client1, client2
-        Client client1 = new Client("Bob");
-        Client client2 = new Client("John");
-
-        //put them in collection
-        clients.add(client1);
-        clients.add(client2);
-
         return clients;
+    }
+
+    /**
+     * sort clients by name
+     *
+     * @param clientsBeforeSort     arrayList with clients before sorting
+     * @return
+     */
+    public ArrayList<Client> sortByName (ArrayList <Client> clientsBeforeSort) {
+        Collections.sort(clientsBeforeSort, (client1, client2)
+                ->  client1.getName().compareTo(client2.getName()));
+        return clientsBeforeSort;
+    }
+
+    /**
+     * sort clients by surname
+     *
+     * @param clientsBeforeSort     arrayList with clients before sorting
+     * @return
+     */
+    @Override
+    public ArrayList<Client> sortBySurname(ArrayList<Client> clientsBeforeSort) {
+        Collections.sort(clientsBeforeSort, (client1, client2)
+                -> client1.getSurname().compareTo(client2.getSurname()));
+        return clientsBeforeSort;
+    }
+
+    /**
+     * sort clients by email
+     *
+     * @param clientsBeforeSort     arrayList with clients before sorting
+     * @return
+     */
+    @Override
+    public ArrayList<Client> sortByEmail(ArrayList<Client> clientsBeforeSort) {
+        Collections.sort(clientsBeforeSort, (client1, client2)
+                -> client1.getEmailOrIndefined().compareTo(client2.getEmailOrIndefined()));
+        return clientsBeforeSort;
+    }
+
+    /**
+     * sort clients by age
+     *
+     * @param clientsBeforeSort     arrayList with clients before sorting
+     * @return
+     */
+    @Override
+    public ArrayList<Client> sortByAge(ArrayList<Client> clientsBeforeSort) {
+        Collections.sort(clientsBeforeSort, (client1, client2)
+                -> client1.getAge() - client2.getAge());
+        return clientsBeforeSort;
+    }
+
+    /**
+     * sort clients by sex
+     *
+     * @param clientsBeforeSort     arrayList with clients before sorting
+     * @return
+     */
+    @Override
+    public ArrayList<Client> sortBySex(ArrayList<Client> clientsBeforeSort) {
+        Collections.sort(clientsBeforeSort, (client1, client2)
+                -> client1.getSexOrIndefined().compareTo(client2.getSexOrIndefined()));
+        return clientsBeforeSort;
     }
 }

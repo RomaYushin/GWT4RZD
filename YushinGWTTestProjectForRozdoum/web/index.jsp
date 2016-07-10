@@ -9,6 +9,8 @@
 <html>
   <head>
     <title>$Title$</title>
+    <script type="text/javascript" language="javascript"
+            src="/gwt/ua.yushin.gwt.StartRun/ua.yushin.gwt.StartRun.nocache.js"></script>
   </head>
   <body>
   $END$

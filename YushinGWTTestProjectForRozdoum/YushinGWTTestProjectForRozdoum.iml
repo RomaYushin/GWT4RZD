@@ -17,6 +17,9 @@
         <setting name="gwtScriptOutputStyle" value="DETAILED" />
         <setting name="gwtSdkUrl" value="file://C:/Program Files/gwt-2.7.0" />
         <setting name="webFacet" value="Web" />
+        <packaging>
+          <module name="ua.yushin.gwt.StartRun" path="/gwt/ua.yushin.gwt.StartRun" />
+        </packaging>
       </configuration>
     </facet>
   </component>
